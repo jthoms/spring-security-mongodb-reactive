@@ -24,7 +24,7 @@ public class UserAccountService {
 		return userAccountRepository.count();
 	}
 	
-	public Mono<UserAccount> findByUsername(ObjectId id) {
+	public Mono<UserAccount> findByObjectId(ObjectId id) {
 		return userAccountRepository.findById(id);
 	}
 	
@@ -37,6 +37,11 @@ public class UserAccountService {
 	}
 	
 	public Mono<UserAccount> create(UserAccount userAccount) {
+		UserAccount dup = userAccountRepository.findUserAccountByUsername(userAccount.getUsername()).block();
+		if (dup != null) {
+			throw new RuntimeException("User exists");
+		}
+		
 		return userAccountRepository.save(userAccount);
 	}
 	

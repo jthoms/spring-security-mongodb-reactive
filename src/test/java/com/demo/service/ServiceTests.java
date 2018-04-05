@@ -1,12 +1,12 @@
 package com.demo.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -98,9 +98,10 @@ public class ServiceTests extends AbstractPopulatingUserAccountService {
 	
 	@Test
 	public void duplicateUsernameException() {
-		UserAccount dupUser =  UserAccount.builder().username(USER_USERNAME).password(userPasswordEncoded).email("user@example.com").build();
-		Mono<UserAccount> create = userAccountService.create(dupUser);
-
-		StepVerifier.create(create).expectError(DuplicateKeyException.class).verify();
+	    Throwable exception = assertThrows(RuntimeException.class, () -> {
+	    	UserAccount dupUser =  UserAccount.builder().username(USER_USERNAME).password(userPasswordEncoded).email("user@example.com").build();
+	    	userAccountService.create(dupUser).block();
+	    });
+		assertThat(exception.getMessage().equals("User exists"));
 	}
 }
