@@ -29,8 +29,7 @@ public abstract class AbstractPopulatingMongoOperations extends AbstractUserAcco
 				.flatMap(exists -> exists ? operations.dropCollection(Role.class) : Mono.just(exists))
 				.then(operations.createCollection(Role.class, CollectionOptions.empty()
 						.size(1024 * 1024)
-						.maxDocuments(10)
-						.capped()));
+						.maxDocuments(10)));
 		StepVerifier.create(recreateRolesCollection).expectNextCount(1).verifyComplete();
 
 		Flux<Role> insertRoles = operations.insertAll(Flux.just(roleUser, roleAdmin, roleSuperAdmin).collectList());
@@ -41,8 +40,7 @@ public abstract class AbstractPopulatingMongoOperations extends AbstractUserAcco
 				.flatMap(exists -> exists ? operations.dropCollection(UserAccount.class) : Mono.just(exists))
 				.then(operations.createCollection(UserAccount.class, CollectionOptions.empty()
 						.size(1024 * 1024)
-						.maxDocuments(10)
-						.capped()));
+						.maxDocuments(10)));
 		StepVerifier.create(recreateUserAccountCollection).expectNextCount(1).verifyComplete();
 			
 		Flux<UserAccount> insertUserAccounts = operations.insertAll(Flux.just(user, admin, superadmin).collectList());
